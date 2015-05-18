@@ -4,7 +4,7 @@ package asgn2Exceptions;
  * Exception thrown when an attempt is made to construct an invalid container
  * code.
  * 
- * @author Brendan Rothwell n8540683
+ * @author Brendan Rothwell n8540683 TEST LINE OF CODE TEST LINE
  * @version 1.0
  */
 @SuppressWarnings("serial")
