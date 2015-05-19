@@ -74,12 +74,13 @@ import asgn2Exceptions.InvalidCodeException;
  * i.e., '<code>1</code>', thus confirming that container code 
  * <code>MSCU6639871</code> is valid.
  * 
- * @author CAB302 
+ * @author Leandro Rodrigues n9382909 
  * @version 1.0
  */ 
 public class ContainerCode {
 
-
+	private String code;
+	
 	/**
 	 * Constructs a new container code.
 	 * 
@@ -90,16 +91,70 @@ public class ContainerCode {
 	 * of six digits; or if the Check Digit is incorrect.
 	 */
 	public ContainerCode(String code) throws InvalidCodeException {
-		//Implementation Here
+		//If is a valid code
+		checkCode(code);
+		//If no exception is thrown and the program is still running, store the code into the object
+		this.code = code;
 	}
-
-
+	
+	/**
+	 * Check if a given container code is valid
+	 * 
+	 * @param code the container code as a string to be checked
+	 * @return true if is a valid container code
+	 * @throws InvalidCodeException when is a invalid container code
+	 */
+	private void checkCode(String code) throws InvalidCodeException{
+		//Check if code length is different than 11
+		if(code.length() != 11)
+			throw new InvalidCodeException("Code is not eleven characters long");
+		//Check if owner code digits (First three digits) are upper-case letters
+		if(!(Character.isUpperCase(code.charAt(0)) && Character.isUpperCase(code.charAt(1)) && Character.isUpperCase(code.charAt(2))))
+			throw new InvalidCodeException("Owner Code does not consist of three upper-case letters");
+		//Check if category identifier is equal to U
+		if(code.charAt(3) != 'U')
+			throw new InvalidCodeException("Category Identifier is not 'U");
+		//Check if serial number only contains numeric digits
+		if(!code.substring(4, 10).matches("[0-9]+"))
+			throw new InvalidCodeException("Serial Number does not consist of six digits");
+		//Check if check digit is valid
+		if(calculateCheckDigit(code) != Character.getNumericValue(code.charAt(10)))
+			throw new InvalidCodeException("Check Digit is incorrect");
+	}
+	
+	/**
+	 * Calculate check digit for a given container code
+	 * 
+	 * @param code the container code as a string to calculate the check digit
+	 * @return int calculated check digit
+	 */
+	private int calculateCheckDigit(String code){
+		int sum = 0;
+		//Iterates through the code, excluding the last digit
+		for (int i = 0; i < code.length()-1; i++) {
+			//Get char at actual position and convert to a string
+			String actualCharacter = code.charAt(i)+"";
+			//Check if string  is a number
+	        if (actualCharacter.matches("[0-9]"))
+	        	//If is a number convert to a integer and add it to sum variable
+	        	sum = sum + Integer.parseInt(actualCharacter);
+	        else{
+	        	//If is not a number, convert to lower case and get the letter numeric position within the alphabet
+	        	int charNumericValue = actualCharacter.toLowerCase().charAt(0) - 97;
+	        	//Add its numeric position to sum variable
+	        	sum = sum + charNumericValue;
+	        }
+	    }
+		//Return  least-significant digit in the number
+		return (sum % 10);
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		//Implementation Here
+		return this.code;
 	}
 
 	
@@ -113,7 +168,11 @@ public class ContainerCode {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		//Implementation Here
+		//Verify if object is an instance of Container code and if it has the same code
+		if (obj instanceof ContainerCode && this.code.equals(obj.toString()))
+			return true;
+		else
+			return false;
 	}
 }
 
