@@ -26,7 +26,7 @@ import asgn2Exceptions.InvalidContainerException;
  * Test class for the ContainerCode class
  * 
  * @author Brendan Rothwell n8540683
- * @version 1.2
+ * @version 1.3
  *
  */
 public class ContainerTests {
