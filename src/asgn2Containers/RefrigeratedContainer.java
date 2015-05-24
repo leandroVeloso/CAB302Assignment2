@@ -11,11 +11,12 @@ import asgn2Exceptions.InvalidContainerException;
  * has an externally-readable thermometer to display the internal
  * temperature, but we omit this feature here.)
  * 
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  * @version 1.0
  */
 public class RefrigeratedContainer extends FreightContainer {
-
+	private Integer temperature;
+	
 	/**
 	 * Constructs a refrigerated goods container object with the given
 	 * container code, gross weight and desired temperature.  (In practice
@@ -32,7 +33,8 @@ public class RefrigeratedContainer extends FreightContainer {
 	 */
 	public RefrigeratedContainer(ContainerCode code, Integer grossWeight, Integer temperature)
 	throws InvalidContainerException {
-		//Implementation Here
+		super(code, grossWeight);
+		this.temperature = temperature;
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class RefrigeratedContainer extends FreightContainer {
 	 * @return the temperature (in degrees Celsius)
 	 */
 	public Integer getTemperature() {
-		//Implementation Here
+		return this.temperature;
 	}
 
 	/**
@@ -53,7 +55,7 @@ public class RefrigeratedContainer extends FreightContainer {
 	 * @param temperature the new temperature (in degrees Celsius)
 	 */
 	public void setTemperature(Integer temperature) {
-		//Implementation Here
+		this.temperature = temperature;
 	}
 
 }

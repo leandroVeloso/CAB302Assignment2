@@ -8,7 +8,7 @@ import asgn2Exceptions.InvalidContainerException;
  * no special characteristics.  It is used for carrying furniture, boxes,
  * etc.
  * 
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  * @version 1.0
  */
 public class GeneralGoodsContainer extends FreightContainer {
@@ -24,7 +24,7 @@ public class GeneralGoodsContainer extends FreightContainer {
 	 */
 	public GeneralGoodsContainer(ContainerCode code, Integer grossWeight)
 	throws InvalidContainerException {
-		//Implementation Here
+		super(code, grossWeight);
 	}
 
 }

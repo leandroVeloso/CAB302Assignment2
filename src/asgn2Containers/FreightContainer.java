@@ -10,11 +10,12 @@ import asgn2Exceptions.InvalidContainerException;
  * container code and must have a stated gross weight.  (The gross
  * weight is the sum of the container's tare and net weights.)
  * 
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  * @version 1.0
  */
 public abstract class FreightContainer {
-	
+	private ContainerCode code;
+	private Integer grossWeight;
 	
 	/**
 	 * Constructs a freight container object with the given
@@ -31,7 +32,12 @@ public abstract class FreightContainer {
 	 */
 	public FreightContainer(ContainerCode code, Integer grossWeight)
 	throws InvalidContainerException {
-		//Implementation Here
+		if(grossWeight < 4 || grossWeight > 30)
+			throw new InvalidContainerException("Gross Weight invalid");
+		else{
+			this.code = code;
+			this.grossWeight = grossWeight;
+		}
 	}
 
 	/**
@@ -40,7 +46,7 @@ public abstract class FreightContainer {
 	 * @return the code
 	 */
 	public ContainerCode getCode() {
-		//Implementation Here
+		return this.code;
 	}
 
 	/**
@@ -49,7 +55,7 @@ public abstract class FreightContainer {
 	 * @return the gross weight (in tonnes)
 	 */
 	public Integer getGrossWeight() {
-		//Implementation Here
+		return this.grossWeight;
 	}
 
 
