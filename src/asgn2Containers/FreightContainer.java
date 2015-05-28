@@ -33,7 +33,7 @@ public abstract class FreightContainer {
 	public FreightContainer(ContainerCode code, Integer grossWeight)
 	throws InvalidContainerException {
 		if(grossWeight < 4 || grossWeight > 30)
-			throw new InvalidContainerException("Gross Weight invalid");
+			throw new InvalidContainerException("Gross Weight invalid. Must be between 4 and 30");
 		else{
 			this.code = code;
 			this.grossWeight = grossWeight;

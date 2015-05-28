@@ -10,21 +10,20 @@ import asgn2Manifests.CargoManifest;
 /**
  * Creates a JTextArea in which textual components are laid out to represent the cargo manifest.
  *
- * @author CAB302.
+ * @author Leandro Rodrigues n9382909
  */
+@SuppressWarnings("serial")
 public class CargoTextArea extends JTextArea {
 
     private static final int WIDTH = 120;
     private static final int HEIGHT = 50;
-    private static final int HSPACE = 10;
-    private static final int VSPACE = 20;
 
     private final CargoManifest cargo;
 
     private ContainerCode toFind;
 
     /**
-     * Constructor initialises the JTextArea.
+     * Constructor initializes the JTextArea.
      *
      * @param cargo he <code>CargoManifest</code> on which the text area is based 
      * 
@@ -43,7 +42,9 @@ public class CargoTextArea extends JTextArea {
      * @param code ContainerCode to highlight.
      */
     public void setToFind(ContainerCode code) {
-        //implementation here - don't forget to update the display
+    	this.toFind = code;
+    	String highlightedCargoManf = this.cargo.toString(toFind);
+    	this.setText(highlightedCargoManf);
     }
 
     /**
@@ -51,6 +52,7 @@ public class CargoTextArea extends JTextArea {
      *
      */
     public void updateDisplay() {
-    	//implementation here
+    	String textualCargoManifest = this.cargo.toString();
+    	this.setText(textualCargoManifest);
     }
 }

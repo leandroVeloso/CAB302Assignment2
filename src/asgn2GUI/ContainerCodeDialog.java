@@ -1,10 +1,7 @@
 package asgn2GUI;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,16 +12,16 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import asgn2Codes.ContainerCode;
-import asgn2Exceptions.CargoException;
 
 /**
  * Creates a dialog box allowing the user to enter a ContainerCode.
  *
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  */
+@SuppressWarnings("serial")
 public class ContainerCodeDialog extends AbstractDialog {
 
-    private final static int WIDTH = 250;
+    private final static int WIDTH = 400;
     private final static int HEIGHT = 120;
 
     private JTextField txtCode;
@@ -61,7 +58,7 @@ public class ContainerCodeDialog extends AbstractDialog {
         constraints.weighty = 100;
 
         txtCode = new JTextField();
-        txtCode.setColumns(11);
+        txtCode.setColumns(22);
         txtCode.setName("Container Code");
         txtCode.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -84,18 +81,43 @@ public class ContainerCodeDialog extends AbstractDialog {
              * Attempts to validate the ContainerCode entered in the Container Code text field.
              */
             private void validate() {
-            	//implementation here 
+            	// Verifies code, showing to the user a message with information about the errors in it
+            	try {
+            		if(txtCode.getText().equals(""))
+            			lblErrorInfo.setText(" ");
+            		else{
+            			new ContainerCode(txtCode.getText());
+            			lblErrorInfo.setText(" ");
+            		}
+				} catch (Exception e) {
+					lblErrorInfo.setText("("+e.getMessage().substring(38)+")");
+				}
             }
         });
 
-      //implementation here 
-
+        // Creates, adds, and returns Panel content.
+        lblErrorInfo = new JLabel(" ");
+        lblErrorInfo.setVisible(true);
+        addToPanel(toReturn, new JLabel("Container Code:"), constraints, 0, 0, 1, 1);
+        addToPanel(toReturn, txtCode, constraints, 3, 0, 1, 1);
+        constraints.anchor = GridBagConstraints.CENTER;
+        addToPanel(toReturn, lblErrorInfo, constraints, 0, 1, 6, 0);
         return toReturn;
     }
 
     @Override
     protected boolean dialogDone() {
-    	//implementation here 
+    	// Tries to create a container code after user finish using the dialog. Also handles exceptions.
+    	ContainerCode containerCode;
+    	try {
+    		containerCode = new ContainerCode(txtCode.getText());
+			this.code = containerCode;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+    	
+    	return true;
     }
 
     /**
@@ -105,6 +127,12 @@ public class ContainerCodeDialog extends AbstractDialog {
      * @return a <code>ContainerCode</code> instance with valid values.
      */
     public static ContainerCode showDialog(JFrame parent) {
-    	//implementation here
+    	// Creates a visible modal dialog and performs possible actions. After returns created container code.
+    	final JFrame myJFrameParent = parent;
+        ContainerCodeDialog myContainerCodeDialog = new ContainerCodeDialog(myJFrameParent);
+        myContainerCodeDialog.setVisible(true);
+        myContainerCodeDialog.setModal(true);
+        
+		return myContainerCodeDialog.code;
     }
 }

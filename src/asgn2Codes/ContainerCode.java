@@ -91,7 +91,6 @@ public class ContainerCode {
 	 * of six digits; or if the Check Digit is incorrect.
 	 */
 	public ContainerCode(String code) throws InvalidCodeException {
-		//If is a valid code
 		checkCode(code);
 		//If no exception is thrown and the program is still running, store the code into the object
 		this.code = code;

@@ -19,16 +19,19 @@ import asgn2Containers.DangerousGoodsContainer;
 import asgn2Containers.FreightContainer;
 import asgn2Containers.GeneralGoodsContainer;
 import asgn2Containers.RefrigeratedContainer;
-import asgn2Exceptions.CargoException;
 
 /**
  * Creates a dialog box allowing the user to enter information required for loading a container.
  *
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  */
 public class LoadContainerDialog extends AbstractDialog implements ActionListener, ItemListener {
 
-    private static final int HEIGHT = 200;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final int HEIGHT = 200;
     private static final int WIDTH = 350;
 
     private JPanel pnlCards;
@@ -75,9 +78,8 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
         JPanel pnlContent = new JPanel();
         pnlContent.setLayout(new GridBagLayout());
         addToPanel(pnlContent, createCommonControls(), constraints, 0, 0, 2, 1);
-        constraints.weighty = 10;
-        addToPanel(pnlContent, pnlCards, constraints, 0, 1, 2, 1);
-
+        addToPanel(pnlContent, pnlCards, constraints, 0, 3, 2, 1);
+        
         return pnlContent;
     }
 
@@ -100,7 +102,7 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
         cbType.setEditable(false);
         cbType.addItemListener(this);
         cbType.setName("Container Type");
-      //Don't modify - END 
+        //Don't modify - END 
 
         txtWeight = createTextField(5, "Container Weight");
         txtCode = createTextField(11, "Container Code");
@@ -136,14 +138,33 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
         constraints.weighty = 100;
 
         JPanel cardDangerousGoods = new JPanel();
-        cardDangerousGoods.setLayout(new GridBagLayout());
-        txtDangerousGoodsType = createTextField(5, "Goods Category");
+        txtDangerousGoodsType = createTextField(11, "Goods Category");
 
         JPanel cardRefrigeratedGoods = new JPanel();
-        cardRefrigeratedGoods.setLayout(new GridBagLayout());
-        txtTemperature = createTextField(5, "Temperature");
+        txtTemperature = createTextField(11, "Temperature");
 
-        //Finish here 
+        // Creates cards panels and its labels and texts fields 
+        pnlCards = new JPanel(new CardLayout());
+        JPanel cardGeneral = new JPanel();
+        JLabel labelDangerousGoodsType = new JLabel("Goods Category:");
+    	JLabel labelTemperature = new JLabel("Temperature ºC:");
+        constraints = new GridBagConstraints();
+
+        cardDangerousGoods.setLayout(new GridBagLayout());
+        cardRefrigeratedGoods.setLayout(new GridBagLayout());
+        cardGeneral.setLayout(new GridBagLayout());
+        
+        addToPanel(cardDangerousGoods, labelDangerousGoodsType, constraints,  0, 0, 2, 1);
+        addToPanel(cardRefrigeratedGoods, labelTemperature, constraints,  0, 0, 2, 1);
+       
+        addToPanel(cardDangerousGoods, txtDangerousGoodsType, constraints, 3, 0, 2, 1);        
+        addToPanel(cardRefrigeratedGoods, txtTemperature, constraints, 3, 0, 2, 1);
+        
+        
+        pnlCards.add(cardDangerousGoods, "Dangerous");
+        pnlCards.add(cardRefrigeratedGoods, "Refrigareted");
+        pnlCards.add(cardGeneral, "General");
+        
     }
 
     /**
@@ -152,7 +173,17 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
     @Override
     public void itemStateChanged(ItemEvent event) {
         CardLayout cl = (CardLayout) pnlCards.getLayout();
-        //Finish here - show cards and set text fields
+        // Verifies which container type is selected and shows card
+        if(cbType.getSelectedItem().toString().contains(comboBoxItems[0])){
+        	cl.show(pnlCards, "Dangerous");
+        }
+        if(cbType.getSelectedItem().toString().contains(comboBoxItems[1])){
+        	cl.show(pnlCards, "General");
+        }
+        if(cbType.getSelectedItem().toString().contains(comboBoxItems[2])){
+        	cl.show(pnlCards, "Refrigareted");
+        }
+        
     }
 
     /**
@@ -160,8 +191,46 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
      */
     @Override
     protected boolean dialogDone() {
-        //Implementation here - create the container and set parameters, 
-    	//But handle the exceptions properly 
+        // After user insert inputs, tries to create a code, after converts user inputs to Integers, and finally tries to create the container of given type.
+    	// Also handles exceptions
+    	ContainerCode containerCode;
+    	Integer containerWeight = null, containerType = null, containerTemperature = null; 
+    	try {
+    		containerCode = new ContainerCode(txtCode.getText());
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+    	
+    	try {
+    		containerWeight = Integer.parseInt(txtWeight.getText());
+    		if(cbType.getSelectedItem().toString().contains(comboBoxItems[0])){
+    			containerType = Integer.parseInt(txtDangerousGoodsType.getText());
+            }
+            if(cbType.getSelectedItem().toString().contains(comboBoxItems[2])){
+            	containerTemperature = Integer.parseInt(txtTemperature.getText());
+            }
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Please use only whole numbers (Integer) for all inputs", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+    	
+    	try {
+    		if(cbType.getSelectedItem().toString().contains(comboBoxItems[0])){
+    			container = new DangerousGoodsContainer(containerCode, containerWeight, containerType);
+            }
+    		if(cbType.getSelectedItem().toString().contains(comboBoxItems[1])){
+            	container = new GeneralGoodsContainer(containerCode, containerWeight);
+            }
+            if(cbType.getSelectedItem().toString().contains(comboBoxItems[2])){
+            	container = new RefrigeratedContainer(containerCode, containerWeight, containerTemperature);
+            }
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+    	return true;
     }
 
     /**
@@ -171,7 +240,15 @@ public class LoadContainerDialog extends AbstractDialog implements ActionListene
      * @return a <code>FreightContainer</code> instance with valid values.
      */
     public static FreightContainer showDialog(JFrame parent) {
-       //Implementation here. 
+    	// Creates a visible modal dialog and performs possible actions. After returns created container.
+    	final JFrame myJFrameParent = parent;
+        LoadContainerDialog myLoadContainertDialog = new LoadContainerDialog(myJFrameParent);
+        
+        myLoadContainertDialog.setVisible(true);
+        myLoadContainertDialog.setModal(true);
+        
+		return myLoadContainertDialog.container;
+       
     }
 
 }

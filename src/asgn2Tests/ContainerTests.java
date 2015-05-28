@@ -84,7 +84,7 @@ public class ContainerTests {
 	public void setUpBefore() throws Exception {
 		cc = new ContainerCode(CODE1);
 		cc2 = new ContainerCode(CODE2);
-		fc = new FreightContainer(cc, GROSSWT);
+		fc = new GeneralGoodsContainer(cc, GROSSWT);
 		rc = new RefrigeratedContainer(cc, GROSSWT, TEMP1);
 		dgc = new DangerousGoodsContainer(cc, GROSSWT, CAT1);
 	}
@@ -288,7 +288,7 @@ public class ContainerTests {
 	 */
 	@Test(expected = Exception.class)
 	public final void highGrossWeightFC() throws InvalidContainerException {
-		new FreightContainer(cc, HIGROSSWT);
+		new GeneralGoodsContainer(cc, HIGROSSWT);
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class ContainerTests {
 	 */
 	@Test(expected = Exception.class)
 	public final void lowGrossWeightFC() throws InvalidContainerException {
-		new FreightContainer(cc, LOWGROSSWT);
+		new GeneralGoodsContainer(cc, LOWGROSSWT);
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class ContainerTests {
 	 */
 	@Test(expected = Exception.class)
 	public final void zeroGrossWeightFC() throws InvalidContainerException {
-		new FreightContainer(cc, 0);
+		new GeneralGoodsContainer(cc, 0);
 	}
 
 	/**
@@ -318,7 +318,7 @@ public class ContainerTests {
 	 */
 	@Test(expected = Exception.class)
 	public final void negativeGrossWeightFC() throws InvalidContainerException {
-		new FreightContainer(cc, NEGATIVEGROSSWT);
+		new GeneralGoodsContainer(cc, NEGATIVEGROSSWT);
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class ContainerTests {
 	 */
 	@Test(expected = Exception.class)
 	public final void nullGrossWeightFC() throws InvalidContainerException {
-		new FreightContainer(cc, null);
+		new GeneralGoodsContainer(cc, null);
 	}
 
 	// Testing getCode() method

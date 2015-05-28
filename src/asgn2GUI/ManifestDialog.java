@@ -9,14 +9,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import asgn2Exceptions.CargoException;
 import asgn2Manifests.CargoManifest;
 
 /**
  * Creates a dialog box allowing the user to enter parameters for a new <code>CargoManifest</code>.
  *
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  */
+@SuppressWarnings("serial")
 public class ManifestDialog extends AbstractDialog {
 
     private static final int HEIGHT = 150;
@@ -26,7 +26,7 @@ public class ManifestDialog extends AbstractDialog {
     private JTextField txtMaxHeight;
     private JTextField txtMaxWeight;
 
-    private CargoManifest manifest;
+    private static CargoManifest manifest;
 
     /**
      * Constructs a modal dialog box that gathers information required for creating a cargo
@@ -54,7 +54,27 @@ public class ManifestDialog extends AbstractDialog {
         JPanel toReturn = new JPanel();
         toReturn.setLayout(new GridBagLayout());
 
-       //Implementation here
+        JLabel labelNumStacks = new JLabel("Number of Stacks:");
+        JLabel labelMaxHeight = new JLabel("Max Stack Height:");
+        JLabel labelMaxWeight = new JLabel("Max Weight:");
+        
+        
+        GridBagConstraints constraints = new GridBagConstraints(); 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.weightx = 120;
+        constraints.weighty = 100;
+        
+        addToPanel(toReturn, labelNumStacks,constraints,0,0,2,1);
+		addToPanel(toReturn, txtNumStacks,constraints,3,0,2,1);
+		
+		addToPanel(toReturn, labelMaxHeight,constraints,0,1,2,1);
+		addToPanel(toReturn, txtMaxHeight,constraints,3,1,2,1);
+		
+		addToPanel(toReturn, labelMaxWeight,constraints,0,2,2,1);
+		addToPanel(toReturn, txtMaxWeight,constraints,3,2,2,1);   
+        
+        return toReturn;
     }
 
     /*
@@ -69,8 +89,28 @@ public class ManifestDialog extends AbstractDialog {
 
     @Override
     protected boolean dialogDone() {
-        //Implementation here 
-    	//Parameters and building a new manifest, all the while handling exceptions 
+    	// After user insert inputs, converts user inputs to Integers, and finally tries to create a manifest
+    	// Also handles exceptions
+    	
+    	Integer numStacks, maxHeight, maxWeight;
+    	try {
+    		numStacks = Integer.parseInt(txtNumStacks.getText());
+    		maxHeight = Integer.parseInt(txtMaxHeight.getText());
+    		maxWeight = Integer.parseInt(txtMaxWeight.getText());
+    		
+    		try {
+				manifest = new CargoManifest(numStacks, maxHeight, maxWeight);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+    		
+    		return true;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Please use only whole numbers (Integer) for all inputs", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+    	
     }
 
     /**
@@ -80,6 +120,13 @@ public class ManifestDialog extends AbstractDialog {
      * @return a <code>CargoManifest</code> instance with valid values.
      */
     public static CargoManifest showDialog(JFrame parent) {
-        //Implementation again 
+    	// Creates a visible modal dialog and performs possible actions. After returns created manifest. 
+    	final JFrame myJFrameParent = parent;
+        ManifestDialog myManifestDialog = new ManifestDialog(myJFrameParent);
+        
+        myManifestDialog.setVisible(true);
+        myManifestDialog.setModal(true);
+        
+		return manifest ;
     }
 }

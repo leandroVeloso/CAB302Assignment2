@@ -1,10 +1,10 @@
 package asgn2GUI;
 
-import java.awt.BorderLayout;
+
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,11 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+
 /**
  * Provides base class for dialog boxes used for data entry.
  *
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  */
+@SuppressWarnings("serial")
 public abstract class AbstractDialog extends JDialog implements ActionListener {
 
     private JButton btnOK;
@@ -32,7 +34,7 @@ public abstract class AbstractDialog extends JDialog implements ActionListener {
      * @param parent The parent frame the dialog box is to be attached to
      * @param title The title of the dialog box
      * @param width The dialog box width
-     * @param height The dialog box hieght
+     * @param height The dialog box height
      */
     protected AbstractDialog(Frame parent, String title, int width, int height) {
         super(parent, title, true);
@@ -40,7 +42,22 @@ public abstract class AbstractDialog extends JDialog implements ActionListener {
         JPanel pnlDialogControls = createDialogControls();
         JPanel pnlContent = createContentPanel();
 
-        //Stuff goes here 
+        this.setSize(width, height);
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints cons = new GridBagConstraints(); 
+        cons.fill = GridBagConstraints.BOTH;
+        
+        cons.gridy = 0;  
+        cons.gridx = 0;
+        cons.gridheight = 1;
+        this.add(pnlContent, cons);
+        
+        cons.gridy = 2;  
+        cons.gridx = 0;
+        
+        this.add(pnlDialogControls, cons);
+	    this.setLocationRelativeTo(parent);
+     
     }
 
     /**
@@ -57,7 +74,16 @@ public abstract class AbstractDialog extends JDialog implements ActionListener {
      * @return JPanel with OK and Cancel buttons.
      */
     private JPanel createDialogControls() {
-    	//implementation here    
+    	JPanel controlsPanel = new JPanel();
+    	GridBagConstraints cons = new GridBagConstraints();
+    	
+    	btnOK = createButton("OK");
+    	btnCancel = createButton("Cancel");
+    	
+    	addToPanel(controlsPanel, btnOK, cons, 0, 0, 0, 0);
+    	addToPanel(controlsPanel, btnCancel, cons, 1, 0, 0, 0);
+    	
+    	return controlsPanel;
     }
 
     /**
@@ -137,13 +163,13 @@ public abstract class AbstractDialog extends JDialog implements ActionListener {
      * Disables the OK button
      */
     protected void disableSubmit() {
-    	//implementation here    
+    	btnOK.setEnabled(false);
     }
 
     /**
      * Enables the OK button
      */
     protected void enableSubmit() {
-    	//implementation here    
+    	btnOK.setEnabled(true);
     }
 }

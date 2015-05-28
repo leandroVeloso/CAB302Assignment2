@@ -13,13 +13,15 @@ import javax.swing.SwingUtilities;
 
 import asgn2Codes.ContainerCode;
 import asgn2Containers.FreightContainer;
+import asgn2Exceptions.ManifestException;
 import asgn2Manifests.CargoManifest;
 
 /**
  * The main window for the Cargo Manifest Text application.
  *
- * @author CAB302
+ * @author Leandro Rodrigues n9382909
  */
+@SuppressWarnings("serial")
 public class CargoTextFrame extends JFrame {
 
     private static final int WIDTH = 600;
@@ -56,30 +58,40 @@ public class CargoTextFrame extends JFrame {
      * @param cargo The <code>CargoManifest</code> instance containing necessary state for display.
      */
     private void setCanvas(CargoManifest cargo) {
+    	pnlDisplay = new JPanel();
         if (canvas != null) {
             pnlDisplay.remove(canvas);
         }
         if (cargo == null) {
             disableButtons();
         } else {
+        	// If a cargo was instantiated properly (!= null) then creates, updates, shows, and adds a canvas with its textual representation
             canvas = new CargoTextArea(cargo);
-            //implementation here 
+            canvas.updateDisplay();
+            pnlDisplay.add(canvas);
+            pnlDisplay.setVisible(true);
+            this.getContentPane().add(pnlDisplay, BorderLayout.CENTER);
+            redraw();
         }
-        redraw();
+
     }
 
     /**
      * Enables buttons for user interaction.
      */
     private void enableButtons() {
-    	//implementation here 
+    	btnLoad.setEnabled(true);
+    	btnUnload.setEnabled(true);
+    	btnFind.setEnabled(true);
     }
 
     /**
      * Disables buttons from user interaction.
      */
     private void disableButtons() {
-    	//implementation here 
+    	btnLoad.setEnabled(false);
+    	btnUnload.setEnabled(false);
+    	btnFind.setEnabled(false);
     }
 
     /**
@@ -103,16 +115,46 @@ public class CargoTextFrame extends JFrame {
             }
         });
         btnUnload = createButton("Unload", new ActionListener() {
-        	//implementation here 
+        	 @Override
+             public void actionPerformed(ActionEvent e) {
+                 Runnable doRun = new Runnable() {
+                     @Override
+                     public void run() {
+                         CargoTextFrame.this.resetCanvas();
+                         CargoTextFrame.this.doUnload();
+                     }
+                 };
+                 SwingUtilities.invokeLater(doRun);
+             }
         });
         btnFind = createButton("Find", new ActionListener() {
-        	//implementation here 
+        	@Override
+            public void actionPerformed(ActionEvent e) {
+                Runnable doRun = new Runnable() {
+                    @Override
+                    public void run() {
+                        CargoTextFrame.this.resetCanvas();
+                        CargoTextFrame.this.doFind();
+                    }
+                };
+                SwingUtilities.invokeLater(doRun);
+            }
         });
         btnNewManifest = createButton("New Manifest", new ActionListener() {
-        	//implementation here 
+        	@Override
+            public void actionPerformed(ActionEvent e) {
+                Runnable doRun = new Runnable() {
+                    @Override
+                    public void run() {
+                        CargoTextFrame.this.resetCanvas();
+                        CargoTextFrame.this.setNewManifest();
+                    }
+                };
+                SwingUtilities.invokeLater(doRun);
+            } 
         });
 
-      //implementation here 
+        this.getContentPane().add(createControlPanel(), BorderLayout.SOUTH);
         repaint();
     }
 
@@ -122,7 +164,14 @@ public class CargoTextFrame extends JFrame {
      * @return User control panel.
      */
     private JPanel createControlPanel() {
-    	//implementation here 
+    	pnlControls = new JPanel();
+        pnlControls.add(btnLoad);
+        pnlControls.add(btnUnload);
+        pnlControls.add(btnFind);
+        pnlControls.add(btnNewManifest);
+        enableButtons();
+        return pnlControls;
+    	
     }
 
     /**
@@ -143,22 +192,36 @@ public class CargoTextFrame extends JFrame {
      * Initiate the New Manifest dialog which sets the instance of CargoManifest to work with.
      */
     private void setNewManifest() {
-    	//implementation here 
+        CargoManifest aCargo = ManifestDialog.showDialog(this);
+        if(aCargo != null){
+        	this.cargo = aCargo;
+    		enableButtons();
+    	}
+        setCanvas(cargo);
     }
 
     /**
      * Turns off container highlighting when an action other than Find is initiated.
      */
     private void resetCanvas() {
-    	//implementation here 
+    	if (canvas != null) 
+        	canvas.updateDisplay();
     }
 
     /**
      * Initiates the Load Container dialog.
      */
     private void doLoad() {
-    	//implementation here 
-        //Don't forget to redraw
+    	// Show a dialog and check if it returns a notnull object if so tries to load the container into the ship. Also handles possible exceptions
+    	FreightContainer con = LoadContainerDialog.showDialog(this);
+    	if(con != null){
+	    	try {
+				cargo.loadContainer(con);
+			} catch (ManifestException e) {
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+	    	redraw();
+    	}
 
     }
 
@@ -166,15 +229,34 @@ public class CargoTextFrame extends JFrame {
      * Initiates the Unload Container dialog.
      */
     private void doUnload() {
-    	//implementation here 
-        //Don't forget to redraw
+    	// Show a dialog and check if it returns a notnull object if so tries to unload the container. Also handles possible exceptions
+    	ContainerCode code = ContainerCodeDialog.showDialog(this);
+    	if(code != null){
+			try {
+				
+				cargo.unloadContainer(code);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			redraw();
+    	}
+    	
     }
 
     /**
      * Initiates the Find Container dialog.
      */
     private void doFind() {
-    	//implementation here 
+    	// Show a dialog and check if it returns a notnull object if so tries to find the container into the ship nad highLight it. Also handles possible exceptions
+    	ContainerCode con = ContainerCodeDialog.showDialog(this);
+    	if(con != null){
+	    	try {
+				canvas.setToFind(con);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+    	}
+    	
     }
 
     /**
@@ -183,6 +265,7 @@ public class CargoTextFrame extends JFrame {
      *
      */
     private void redraw() {
-    	//implementation here 
+    	canvas.updateDisplay();
+    	canvas.revalidate();
     }
 }
