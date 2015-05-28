@@ -7,12 +7,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import asgn2Codes.ContainerCode;
-import asgn2Containers.FreightContainer;
 import asgn2Manifests.CargoManifest;
 
 /**
@@ -22,159 +19,211 @@ import asgn2Manifests.CargoManifest;
  */
 public class CargoFrame extends JFrame {
 
-    private static final int WIDTH = 600;
-    private static final int HEIGHT = 400;
+	private static final int WIDTH = 600;
+	private static final int HEIGHT = 400;
 
-    private JButton btnLoad;
-    private JButton btnUnload;
-    private JButton btnFind;
-    private JButton btnNewManifest;
+	private JButton btnLoad;
+	private JButton btnUnload;
+	private JButton btnFind;
+	private JButton btnNewManifest;
 
-    private CargoCanvas canvas;
+	private CargoCanvas canvas;
 
-    private JPanel pnlControls;
-    private JPanel pnlDisplay;
+	private JPanel pnlControls;
+	private JPanel pnlDisplay;
 
-    private CargoManifest cargo;
+	private CargoManifest cargo;
 
-    /**
-     * Constructs the GUI.
-     *
-     * @param title The frame title to use.
-     * @throws HeadlessException from JFrame.
-     */
-    public CargoFrame(String title) throws HeadlessException {
-        super(title);
+	/**
+	 * Constructs the GUI.
+	 *
+	 * @param title
+	 *            The frame title to use.
+	 * @throws HeadlessException
+	 *             from JFrame.
+	 */
+	public CargoFrame(String title) throws HeadlessException {
+		super(title);
+		createControlPanel();
+		constructorHelper();
+		disableButtons();
+		redraw();
+		setVisible(true);
+	}
 
-        constructorHelper();
-        disableButtons();
-        redraw();
-        setVisible(true);
-    }
+	/**
+	 * Initialises the container display area.
+	 *
+	 * @param cargo
+	 *            The <code>CargoManifest</code> instance containing necessary
+	 *            state for display.
+	 */
+	private void setCanvas(CargoManifest cargo) {
+		if (canvas != null) {
+			pnlDisplay.remove(canvas);
+		}
+		if (cargo == null) {
+			disableButtons();
+		} else {
+			canvas = new CargoCanvas(cargo);
+			enableButtons();
+		}
+		redraw();
+	}
 
-    /**
-     * Initialises the container display area.
-     *
-     * @param cargo The <code>CargoManifest</code> instance containing necessary state for display.
-     */
-    private void setCanvas(CargoManifest cargo) {
-        if (canvas != null) {
-            pnlDisplay.remove(canvas);
-        }
-        if (cargo == null) {
-            disableButtons();
-        } else {
-            canvas = new CargoCanvas(cargo);
-          //implementation here    
-        }
-        redraw();
-    }
+	/**
+	 * Enables buttons for user interaction.
+	 */
+	private void enableButtons() {
+		btnLoad.setEnabled(true);
+		btnUnload.setEnabled(true);
+		btnFind.setEnabled(true);
+		btnNewManifest.setEnabled(true);
+	}
 
-    /**
-     * Enables buttons for user interaction.
-     */
-    private void enableButtons() {
-    	//implementation here    
-    }
+	/**
+	 * Disables buttons from user interaction.
+	 */
+	private void disableButtons() {
+		btnLoad.setEnabled(false);
+		btnUnload.setEnabled(false);
+		btnFind.setEnabled(false);
+		btnNewManifest.setEnabled(false);
+	}
 
-    /**
-     * Disables buttons from user interaction.
-     */
-    private void disableButtons() {
-    	//implementation here    
-    }
+	/**
+	 * Initialises and lays out GUI components.
+	 */
+	private void constructorHelper() {
+		setSize(WIDTH, HEIGHT);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    /**
-     * Initialises and lays out GUI components.
-     */
-    private void constructorHelper() {
-        setSize(WIDTH, HEIGHT);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		btnLoad = createButton("Load", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Runnable doRun = new Runnable() {
+					@Override
+					public void run() {
+						CargoFrame.this.resetCanvas();
+						CargoFrame.this.doLoad();
+					}
+				};
+				SwingUtilities.invokeLater(doRun);
+			}
+		});
 
-        btnLoad = createButton("Load", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Runnable doRun = new Runnable() {
-                    @Override
-                    public void run() {
-                        CargoFrame.this.resetCanvas();
-                        CargoFrame.this.doLoad();
-                    }
-                };
-                SwingUtilities.invokeLater(doRun);
-            }
-        });
-        btnUnload = createButton("Unload", new ActionListener() {
-        	//implementation here    
-        });
-        btnFind = createButton("Find", new ActionListener() {
-        	//implementation here    
-        });
-        btnNewManifest = createButton("New Manifest", new ActionListener() {
-        	//implementation here    
-        });
+		btnUnload = createButton("Unload", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Runnable doRun = new Runnable() {
+					@Override
+					public void run() {
+						CargoFrame.this.resetCanvas();
+						CargoFrame.this.doUnload();
+					}
+				};
+				SwingUtilities.invokeLater(doRun);
+			}
+		});
 
-      //implementation here    
-        repaint();
-    }
+		btnFind = createButton("Find", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Runnable doRun = new Runnable() {
+					@Override
+					public void run() {
+						CargoFrame.this.resetCanvas();
+						CargoFrame.this.doFind();
+					}
+				};
+				SwingUtilities.invokeLater(doRun);
+			}
+			// implementation here
+		});
+		btnNewManifest = createButton("New Manifest", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Runnable doRun = new Runnable() {
+					@Override
+					public void run() {
+						CargoFrame.this.resetCanvas();
+						CargoFrame.this.setNewManifest();
+					}
+				};
+				SwingUtilities.invokeLater(doRun);
+			}
+		});
+		// implementation here
+		repaint();
+	}
 
-    /**
-     * Creates a JPanel containing user controls (buttons).
-     *
-     * @return User control panel.
-     */
-    private JPanel createControlPanel() {
-    	//implementation here    
-    }
+	/**
+	 * Creates a JPanel containing user controls (buttons).
+	 *
+	 * @return User control panel.
+	 */
+	private JPanel createControlPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(canvas, BorderLayout.NORTH);
+		panel.add(btnLoad, BorderLayout.SOUTH);
+		panel.add(btnUnload, BorderLayout.SOUTH);
+		panel.add(btnFind, BorderLayout.SOUTH);
+		panel.add(btnNewManifest, BorderLayout.SOUTH);
+		return panel;
+	}
 
-    /**
-     * Factory method to create a JButton and add its ActionListener.
-     *
-     * @param name The text to display and use as the component's name.
-     * @param btnListener The ActionListener to add.
-     * @return A named JButton with ActionListener added.
-     */
-    private JButton createButton(String name, ActionListener btnListener) {
-        JButton btn = new JButton(name);
-        btn.setName(name);
-        btn.addActionListener(btnListener);
-        return btn;
-    }
+	/**
+	 * Factory method to create a JButton and add its ActionListener.
+	 *
+	 * @param name
+	 *            The text to display and use as the component's name.
+	 * @param btnListener
+	 *            The ActionListener to add.
+	 * @return A named JButton with ActionListener added.
+	 */
+	private JButton createButton(String name, ActionListener btnListener) {
+		JButton btn = new JButton(name);
+		btn.setName(name);
+		btn.addActionListener(btnListener);
+		return btn;
+	}
 
-    /**
-     * Initiate the New Manifest dialog which sets the instance of CargoManifest to work with.
-     */
-    private void setNewManifest() {
-    	//implementation here    
-    }
+	/**
+	 * Initiate the New Manifest dialog which sets the instance of CargoManifest
+	 * to work with.
+	 */
+	private void setNewManifest() {
 
-    /**
-     * Turns off container highlighting when an action other than Find is initiated.
-     */
-    private void resetCanvas() {
-    	//implementation here    
-    }
+	}
 
-    /**
-     * Initiates the Load Container dialog.
-     */
-    private void doLoad() {
-    	//implementation here 
-    	//don't forget to redraw
-    }
+	/**
+	 * Turns off container highlighting when an action other than Find is
+	 * initiated.
+	 */
+	private void resetCanvas() {
+		// implementation here
+	}
 
-    private void doUnload() {
-    	//implementation here 
-    	//don't forget to redraw
-    }
+	/**
+	 * Initiates the Load Container dialog.
+	 */
+	private void doLoad() {
+		// implementation here
+		// don't forget to redraw
+	}
 
-    private void doFind() {
-    	//implementation here 
-    }
+	private void doUnload() {
+		// implementation here
+		// don't forget to redraw
+	}
 
-    private void redraw() {
-        invalidate();
-        validate();
-        repaint();
-    }
+	private void doFind() {
+		// implementation here
+	}
+
+	private void redraw() {
+		invalidate();
+		validate();
+		repaint();
+	}
 }
